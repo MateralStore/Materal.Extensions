@@ -9,7 +9,6 @@ namespace Materal.Extensions
     public static partial class ObjectExtensions
     {
         private readonly static ConcurrentDictionary<Type, Delegate> _copyPropertiesFunc = [];
-        private const string _copyPropertiesFuncName = "CopyPropertiesByIL";
         private static readonly Type _isCopyFuncType = typeof(Func<string, bool>);
         private static readonly MethodInfo _isCopyFuncInvokeMethodInfo = _isCopyFuncType.GetMethod("Invoke") ?? throw new InvalidOperationException("获取Invoke方法失败");
         /// <summary>
@@ -23,7 +22,6 @@ namespace Materal.Extensions
         {
             DynamicMethod dynamicMethod = new("CopyProperties", null, [sourceType, targetType, _isCopyFuncType], sourceType.Module);
             ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
-            int index = 0;
             foreach (PropertyInfo sourcePropertyInfo in sourceType.GetProperties())
             {
                 if (!sourcePropertyInfo.CanRead) continue;
@@ -43,7 +41,7 @@ namespace Materal.Extensions
                 }
                 else if (sourcePropertyInfo.PropertyType.IsNullableType(targetPropertyInfo.PropertyType))
                 {
-                    index = WriteILTheSourceNullType(ilGenerator, sourcePropertyInfo.Name, getMethod, setMethod, sourcePropertyInfo, index);
+                    WriteILTheSourceNullType(ilGenerator, sourcePropertyInfo.Name, getMethod, setMethod, sourcePropertyInfo);
                 }
             }
             // 返回
@@ -58,10 +56,9 @@ namespace Materal.Extensions
         /// <param name="getMethod"></param>
         /// <param name="setMethod"></param>
         /// <param name="sourcePropertyInfo"></param>
-        /// <param name="index"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private static int WriteILTheSourceNullType(ILGenerator ilGenerator, string name, MethodInfo getMethod, MethodInfo setMethod, PropertyInfo sourcePropertyInfo, int index)
+        private static void WriteILTheSourceNullType(ILGenerator ilGenerator, string name, MethodInfo getMethod, MethodInfo setMethod, PropertyInfo sourcePropertyInfo)
         {
             /*
             if ((isCopy == null || isCopy("Age")) && source.Age.HasValue)
@@ -70,7 +67,7 @@ namespace Materal.Extensions
             }
              */
             // 定义本地变量
-            ilGenerator.DeclareLocal(sourcePropertyInfo.PropertyType);
+            LocalBuilder localBuilder = ilGenerator.DeclareLocal(sourcePropertyInfo.PropertyType);
             // 加载第三个参数（isCopy）到计算堆栈
             ilGenerator.Emit(OpCodes.Ldarg_2);
             // 如果isCopy为null，跳转到指定标签
@@ -91,9 +88,9 @@ namespace Materal.Extensions
             // 调用获取属性方法
             ilGenerator.Emit(OpCodes.Callvirt, getMethod);
             // 将结果存储到本地变量
-            ilGenerator.Emit(OpCodes.Stloc, index);
+            ilGenerator.Emit(OpCodes.Stloc, localBuilder);
             // 加载本地变量的地址到计算堆栈
-            ilGenerator.Emit(OpCodes.Ldloca_S, index);
+            ilGenerator.Emit(OpCodes.Ldloca_S, localBuilder);
             // 调用Source的get_HasValue方法
             MethodInfo getHasValueMethod = sourcePropertyInfo.PropertyType.GetProperty(nameof(Nullable<int>.HasValue))?.GetGetMethod() ?? throw new Exception("获取HasValue失败");
             ilGenerator.Emit(OpCodes.Call, getHasValueMethod);
@@ -105,9 +102,9 @@ namespace Materal.Extensions
             // 调用BClass的get_Age方法
             ilGenerator.Emit(OpCodes.Callvirt, getMethod);
             // 将结果存储到本地变量
-            ilGenerator.Emit(OpCodes.Stloc, index);
+            ilGenerator.Emit(OpCodes.Stloc, localBuilder);
             // 加载本地变量的地址到计算堆栈
-            ilGenerator.Emit(OpCodes.Ldloca_S, index);
+            ilGenerator.Emit(OpCodes.Ldloca_S, localBuilder);
             // 调用Source的get_Value方法
             MethodInfo getValueMethod = sourcePropertyInfo.PropertyType.GetProperty(nameof(Nullable<int>.Value))?.GetGetMethod() ?? throw new Exception("获取Value失败");
             ilGenerator.Emit(OpCodes.Call, getValueMethod);
@@ -115,7 +112,6 @@ namespace Materal.Extensions
             ilGenerator.Emit(OpCodes.Callvirt, setMethod);
             // 标记isCopyFalseLabel的位置
             ilGenerator.MarkLabel(isCopyFalseLabel);
-            return index + 1;
         }
         /// <summary>
         /// 写入IL-目标是可空类型
