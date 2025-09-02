@@ -15,18 +15,14 @@
         /// <param name="exp"></param>
         /// <returns></returns>
         public static Expression ReplaceParameters(Dictionary<ParameterExpression, ParameterExpression> map, Expression exp) => new ExpressionParameterVisitor(map).Visit(exp);
-        /// <inheritdoc />
-        /// <summary>
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        protected override Expression VisitParameter(ParameterExpression p)
+        /// <inheritdoc/>
+        protected override Expression VisitParameter(ParameterExpression parameterExpression)
         {
-            if (_map.TryGetValue(p, out ParameterExpression? replacement))
+            if (_map.TryGetValue(parameterExpression, out ParameterExpression? replacement))
             {
-                p = replacement;
+                parameterExpression = replacement;
             }
-            return base.VisitParameter(p);
+            return base.VisitParameter(parameterExpression);
         }
     }
 }
