@@ -285,7 +285,12 @@
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private static Type[] GetArgTypes(object[] args) => args.Select(m => m.GetType()).ToArray();
+        private static Type[] GetArgTypes(object[] args)
+        {
+            if (args.Length <= 0) return [];
+            return [.. args.Select(m => m.GetType())];
+        }
+
         /// <summary>
         /// 是否是类并且不是抽象类
         /// </summary>
