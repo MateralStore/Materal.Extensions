@@ -1,83 +1,95 @@
-﻿namespace Materal.Extensions
+namespace Materal.Extensions;
+
+/// <summary>
+/// 文件信息扩展
+/// </summary>
+public static class FileInfoExtensions
 {
     /// <summary>
-    /// 文件信息扩展
+    /// 获取文件的Base64字符串
     /// </summary>
-    public static class FileInfoExtensions
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <returns>文件的Base64字符串</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    public static string GetBase64String(this FileInfo fileInfo)
     {
-        /// <summary>
-        /// 获取Base64字符串
-        /// </summary>
-        /// <param name="fileInfo"></param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        public static string GetBase64String(this FileInfo fileInfo)
-        {
-            if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
-            using FileStream fileStream = fileInfo.OpenRead();
-            return fileStream.ToBase64();
-        }
-        /// <summary>
-        /// 是否是图片文件
-        /// </summary>
-        /// <param name="fileInfo"></param>
-        /// <param name="imageType"></param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        public static bool IsImageFile(this FileInfo fileInfo, out string? imageType)
-        {
-            if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
-            using FileStream fileStream = fileInfo.OpenRead();
-            return fileStream.IsImage(out imageType);
-        }
-        /// <summary>
-        /// 是否是图片文件
-        /// </summary>
-        /// <param name="fileInfo"></param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        public static bool IsImageFile(this FileInfo fileInfo)
-        {
-            if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
-            using FileStream fileStream = fileInfo.OpenRead();
-            return fileStream.IsImage();
-        }
-        /// <summary>
-        /// 获取Base64图片
-        /// </summary>
-        /// <param name="fileInfo"></param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="ExtensionException"></exception>
-        public static string GetBase64Image(this FileInfo fileInfo)
-        {
-            if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
-            using FileStream fileStream = fileInfo.OpenRead();
-            return fileStream.ToBase64Image();
-        }
-        /// <summary>
-        /// 获得MD5(32位)签名
-        /// </summary>
-        /// <param name="fileInfo"></param>
-        /// <param name="isLower"></param>
-        /// <returns></returns>
-        public static string GetMd5_32(this FileInfo fileInfo, bool isLower = false)
-        {
-            if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
-            using FileStream fileStream = fileInfo.OpenRead();
-            return fileStream.ToMd5_32Encode(isLower);
-        }
-        /// <summary>
-        /// 获得MD5(16位)签名
-        /// </summary>
-        /// <param name="fileInfo"></param>
-        /// <param name="isLower"></param>
-        /// <returns></returns>
-        public static string GetMd5_16(this FileInfo fileInfo, bool isLower = false)
-        {
-            if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
-            using FileStream fileStream = fileInfo.OpenRead();
-            return fileStream.ToMd5_16Encode(isLower);
-        }
+        using FileStream fileStream = OpenFile(fileInfo);
+        return fileStream.ToBase64();
+    }
+    
+    /// <summary>
+    /// 判断文件是否为图片文件
+    /// </summary>
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <param name="imageType">图片类型</param>
+    /// <returns>是图片文件返回true，否则返回false</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    public static bool IsImageFile(this FileInfo fileInfo, out string? imageType)
+    {
+        using FileStream fileStream = OpenFile(fileInfo);
+        return fileStream.IsImage(out imageType);
+    }
+    
+    /// <summary>
+    /// 判断文件是否为图片文件
+    /// </summary>
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <returns>是图片文件返回true，否则返回false</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    public static bool IsImageFile(this FileInfo fileInfo)
+    {
+        using FileStream fileStream = OpenFile(fileInfo);
+        return fileStream.IsImage();
+    }
+    
+    /// <summary>
+    /// 获取Base64格式的图片字符串
+    /// </summary>
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <returns>Base64格式的图片字符串</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    /// <exception cref="ExtensionException">文件扩展名不支持时抛出异常</exception>
+    public static string GetBase64Image(this FileInfo fileInfo)
+    {
+        using FileStream fileStream = OpenFile(fileInfo);
+        return fileStream.ToBase64Image();
+    }
+    
+    /// <summary>
+    /// 获取文件的MD5签名(32位)
+    /// </summary>
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <param name="isLower">是否小写</param>
+    /// <returns>32位MD5签名</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    public static string GetMd5_32(this FileInfo fileInfo, bool isLower = false)
+    {
+        using FileStream fileStream = OpenFile(fileInfo);
+        return fileStream.ToMd5_32Encode(isLower);
+    }
+    
+    /// <summary>
+    /// 获取文件的MD5签名(16位)
+    /// </summary>
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <param name="isLower">是否小写</param>
+    /// <returns>16位MD5签名</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    public static string GetMd5_16(this FileInfo fileInfo, bool isLower = false)
+    {
+        using FileStream fileStream = OpenFile(fileInfo);
+        return fileStream.ToMd5_16Encode(isLower);
+    }
+    
+    /// <summary>
+    /// 打开文件并返回文件流
+    /// </summary>
+    /// <param name="fileInfo">文件信息对象</param>
+    /// <returns>文件流</returns>
+    /// <exception cref="FileNotFoundException">文件不存在时抛出异常</exception>
+    private static FileStream OpenFile(FileInfo fileInfo)
+    {
+        if (!fileInfo.Exists) throw new FileNotFoundException("文件不存在", fileInfo.FullName);
+        return fileInfo.OpenRead();
     }
 }
