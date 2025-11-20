@@ -18,8 +18,15 @@ public class MinAttribute : ValidationAttribute
     public MinAttribute(object minValue) => MinValue = minValue;
 
     /// <summary>
-    /// 构造方法(DateTime)
+    /// 构造方法<see cref="DateTime"/>
     /// </summary>
+    /// <param name="year"></param>
+    /// <param name="month"></param>
+    /// <param name="day"></param>
+    /// <param name="hour"></param>
+    /// <param name="minute"></param>
+    /// <param name="second"></param>
+    /// <param name="millisecond"></param>
     public MinAttribute(int year, int month, int day, int hour = 0, int minute = 0, int second = 0, int millisecond = 0)
     {
         MinValue = new DateTime(year, month, day, hour, minute, second, millisecond);

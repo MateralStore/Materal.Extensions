@@ -10,13 +10,15 @@ public class MaxAttribute : ValidationAttribute
     /// 最大值
     /// </summary>
     public object MaxValue { get; set; }
+
     /// <summary>
     /// 构造方法
     /// </summary>
     /// <param name="maxValue"></param>
     public MaxAttribute(object maxValue) => MaxValue = maxValue;
+
     /// <summary>
-    /// 构造方法
+    /// 构造方法<see cref="DateTime"/>
     /// </summary>
     /// <param name="year"></param>
     /// <param name="month"></param>
@@ -29,6 +31,7 @@ public class MaxAttribute : ValidationAttribute
     {
         MaxValue = new DateTime(year, month, day, hour, minute, second, millisecond);
     }
+
     /// <summary>
     /// 验证
     /// </summary>
