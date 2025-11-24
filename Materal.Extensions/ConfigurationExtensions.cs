@@ -65,7 +65,7 @@ public static class ConfigurationExtensions
     /// 从配置节获取动态对象
     /// </summary>
     /// <param name="configSection">配置节</param>
-    /// <returns>动态对象，如果配置节没有子项则返回null</returns>
+    /// <returns>动态对象,如果配置节没有子项则返回null</returns>
     /// <exception cref="ArgumentNullException">当configSection为null时抛出</exception>
     public static object? GetConfigItem(this IConfigurationSection configSection)
     {
@@ -82,13 +82,16 @@ public static class ConfigurationExtensions
         {
             if (!string.IsNullOrWhiteSpace(sectionItem.Value))
             {
+                // 尝试将字符串值转换为实际类型
+                object? actualValue = ParseConfigValue(sectionItem.Value);
+
                 if (!isArray)
                 {
-                    propertyDic.Add(sectionItem.Key, sectionItem.Value);
+                    propertyDic.Add(sectionItem.Key, actualValue);
                 }
                 else
                 {
-                    objects.Add(sectionItem.Value);
+                    objects.Add(actualValue);
                 }
             }
             else
@@ -107,6 +110,35 @@ public static class ConfigurationExtensions
         }
 
         return isArray ? objects : propertyDic;
+    }
+
+    /// <summary>
+    /// 解析配置值为实际类型
+    /// </summary>
+    /// <param name="value">配置值字符串</param>
+    /// <returns>解析后的实际类型值</returns>
+    private static object? ParseConfigValue(string? value)
+    {
+        // 尝试解析为布尔值
+        if (bool.TryParse(value, out bool boolValue))
+        {
+            return boolValue;
+        }
+
+        // 尝试解析为长整型
+        if (long.TryParse(value, out long longValue))
+        {
+            return longValue;
+        }
+
+        // 尝试解析为双精度浮点数
+        if (double.TryParse(value, out double doubleValue))
+        {
+            return doubleValue;
+        }
+
+        // 默认返回字符串
+        return value;
     }
 
     /// <summary>

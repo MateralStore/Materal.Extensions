@@ -22,6 +22,7 @@ public static class JsonExtensions
     {
         Converters = { new JsonStringEnumConverter() },//自定义转换器
         PropertyNameCaseInsensitive = true,// 忽略大小写
+        PropertyNamingPolicy = null,// 保持原始属性名大小写，不转换为 camelCase
         WriteIndented = true,// 格式化输出
     };
 
