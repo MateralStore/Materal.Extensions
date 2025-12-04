@@ -1,4 +1,5 @@
 ﻿using Materal.Extensions.JsonConverters;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -20,10 +21,10 @@ public static class JsonExtensions
     /// <returns></returns>
     private static JsonSerializerOptions GetDefaultJsonSerializerOptions() => new()
     {
-        Converters = { new JsonStringEnumConverter() },//自定义转换器
         PropertyNameCaseInsensitive = true,// 忽略大小写
         PropertyNamingPolicy = null,// 保持原始属性名大小写，不转换为 camelCase
         WriteIndented = true,// 格式化输出
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping // 不转义Unicode字符
     };
 
     /// <summary>
