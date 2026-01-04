@@ -8,6 +8,19 @@ namespace Materal.Extensions.Test;
 public class JsonTest
 {
     [TestMethod]
+    public void Test()
+    {
+        Constant constant = new()
+        {
+            Name = "123456",
+            Value = DateTime.Now.ToDateOnly(),
+            ControlType = new(typeof(TestModel))
+        };
+        string json = constant.ToJsonWithInferredTypes();
+        Console.WriteLine(json);
+    }
+
+    [TestMethod]
     public void TestObjectToJson()
     {
         TestModel model = GetTestModel();
@@ -102,4 +115,22 @@ public class TestSubModel
     public DateOnly DateOnly { get; set; } = DateTime.Now.ToDateOnly();
     public TimeOnly TimeOnly { get; set; } = DateTime.Now.ToTimeOnly();
     public LogLevel Enum { get; set; }
+}
+
+public class Constant
+{
+    /// <summary>
+    /// 名称
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 值
+    /// </summary>
+    public object? Value { get; set; }
+
+    /// <summary>
+    /// 控件类型
+    /// </summary>
+    public TypeJsonModel? ControlType { get; set; }
 }

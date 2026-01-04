@@ -31,7 +31,12 @@ internal class ObjectToInferredTypesConverter : JsonConverter<object>
         {
             Type type = value.GetType();
             // 对于基础类型，直接序列化
-            if (type.IsPrimitive || type == typeof(string) || type == typeof(decimal) || type == typeof(DateTime))
+            if (type.IsPrimitive
+                || type == typeof(string)
+                || type == typeof(decimal)
+                || type == typeof(DateTime)
+                || type == typeof(DateOnly)
+                || type == typeof(TimeOnly))
             {
                 JsonSerializer.Serialize(writer, value, type, options);
                 return;
