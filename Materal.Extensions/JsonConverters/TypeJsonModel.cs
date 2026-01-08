@@ -18,7 +18,7 @@ public class TypeJsonModel
             field = value;
             Type? type = Type.GetType(value);
             if (Type == type) return;
-            Type = type;
+            Type ??= type;
         }
     } = string.Empty;
 
