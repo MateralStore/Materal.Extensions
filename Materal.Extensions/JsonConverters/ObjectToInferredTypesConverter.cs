@@ -41,6 +41,12 @@ internal class ObjectToInferredTypesConverter : JsonConverter<object>
                 JsonSerializer.Serialize(writer, value, type, options);
                 return;
             }
+            // 对于数组类型，直接序列化
+            else if (type.IsArray || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                JsonSerializer.Serialize(writer, value, type, options);
+                return;
+            }
             else
             {
                 // 对于复杂类型，添加类型信息

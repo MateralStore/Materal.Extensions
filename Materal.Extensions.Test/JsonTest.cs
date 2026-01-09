@@ -8,19 +8,6 @@ namespace Materal.Extensions.Test;
 public class JsonTest
 {
     [TestMethod]
-    public void Test()
-    {
-        Constant constant = new()
-        {
-            Name = "123456",
-            Value = DateTime.Now.ToDateOnly(),
-            ControlType = new(typeof(TestModel))
-        };
-        string json = constant.ToJsonWithInferredTypes();
-        Console.WriteLine(json);
-    }
-
-    [TestMethod]
     public void TestObjectToJson()
     {
         TestModel model = GetTestModel();
@@ -55,6 +42,35 @@ public class JsonTest
         string json = model.ToJsonWithInferredTypes();
         TypeJsonModel result = json.JsonToObjectWithInferredTypes<TypeJsonModel>();
         model.Type = result.Type;
+    }
+
+    [TestMethod]
+    public void TestListToJson()
+    {
+        List<object> models = [];
+        string emptyJson = models.ToJsonWithInferredTypes();
+        List<object> emptyModels = emptyJson.JsonToObjectWithInferredTypes<List<object>>();
+        Assert.IsEmpty(emptyModels);
+        models.Add(new TestSubModel() { String = "1" });
+        models.Add(new TestModel() { String = "2" });
+        string json = models.ToJsonWithInferredTypes();
+        List<object> result = json.JsonToObjectWithInferredTypes<List<object>>();
+        Assert.HasCount(result.Count, models);
+        for (int i = 0; i < result.Count; i++)
+        {
+            if(result[i] is TestSubModel resultSubModel && models[i] is TestSubModel modelSubModel)
+            {
+                Assert.AreEqual(resultSubModel.String, modelSubModel.String);
+            }
+            else if(result[i] is TestModel resultModel && models[i] is TestModel model)
+            {
+                Assert.AreEqual(resultModel.String, model.String);
+            }
+            else
+            {
+                Assert.Fail("不相等");
+            }
+        }
     }
 
     private static void AreEqual(TestModel? model1, TestModel? model2)
@@ -115,22 +131,4 @@ public class TestSubModel
     public DateOnly DateOnly { get; set; } = DateTime.Now.ToDateOnly();
     public TimeOnly TimeOnly { get; set; } = DateTime.Now.ToTimeOnly();
     public LogLevel Enum { get; set; }
-}
-
-public class Constant
-{
-    /// <summary>
-    /// 名称
-    /// </summary>
-    public string Name { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 值
-    /// </summary>
-    public object? Value { get; set; }
-
-    /// <summary>
-    /// 控件类型
-    /// </summary>
-    public TypeJsonModel? ControlType { get; set; }
 }
