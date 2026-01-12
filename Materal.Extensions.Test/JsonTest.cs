@@ -1,5 +1,6 @@
 using Materal.Extensions.JsonConverters;
 using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace Materal.Extensions.Test;
@@ -58,13 +59,42 @@ public class JsonTest
         Assert.HasCount(result.Count, models);
         for (int i = 0; i < result.Count; i++)
         {
-            if(result[i] is TestSubModel resultSubModel && models[i] is TestSubModel modelSubModel)
+            if (result[i] is TestSubModel resultSubModel && models[i] is TestSubModel modelSubModel)
             {
-                Assert.AreEqual(resultSubModel.String, modelSubModel.String);
+                AreEqual(resultSubModel, modelSubModel);
             }
-            else if(result[i] is TestModel resultModel && models[i] is TestModel model)
+            else if (result[i] is TestModel resultModel && models[i] is TestModel model)
             {
-                Assert.AreEqual(resultModel.String, model.String);
+                AreEqual(resultModel, model);
+            }
+            else
+            {
+                Assert.Fail("不相等");
+            }
+        }
+    }
+
+    [TestMethod]
+    public void TestObservableCollectionToJson()
+    {
+        ObservableCollection<object> models = [];
+        string emptyJson = models.ToJsonWithInferredTypes();
+        ObservableCollection<object> emptyModels = emptyJson.JsonToObjectWithInferredTypes<ObservableCollection<object>>();
+        Assert.IsEmpty(emptyModels);
+        models.Add(new TestSubModel() { String = "1" });
+        models.Add(new TestModel() { String = "2" });
+        string json = models.ToJsonWithInferredTypes();
+        ObservableCollection<object> result = json.JsonToObjectWithInferredTypes<ObservableCollection<object>>();
+        Assert.HasCount(result.Count, models);
+        for (int i = 0; i < result.Count; i++)
+        {
+            if (result[i] is TestSubModel resultSubModel && models[i] is TestSubModel modelSubModel)
+            {
+                AreEqual(resultSubModel, modelSubModel);
+            }
+            else if (result[i] is TestModel resultModel && models[i] is TestModel model)
+            {
+                AreEqual(resultModel, model);
             }
             else
             {
@@ -83,17 +113,24 @@ public class JsonTest
         }
         foreach (PropertyInfo propertyInfo in typeof(TestModel).GetProperties())
         {
-            if (propertyInfo.PropertyType != typeof(TestSubModel))
-            {
-                Assert.AreEqual(propertyInfo.GetValue(model2), propertyInfo.GetValue(model1));
-            }
-            else
-            {
-                foreach (PropertyInfo propertyInfo2 in typeof(TestSubModel).GetProperties())
-                {
-                    Assert.AreEqual(propertyInfo2.GetValue(model2.SubModel), propertyInfo2.GetValue(model1.SubModel));
-                }
-            }
+            if (propertyInfo.PropertyType == typeof(TestSubModel)) continue;
+            Assert.AreEqual(propertyInfo.GetValue(model2), propertyInfo.GetValue(model1));
+        }
+        AreEqual(model1.SubModel, model2.SubModel);
+    }
+
+    private static void AreEqual(object? model1, object? model2)
+    {
+        if (model1 is null && model2 is null) return;
+        if (model1 is null || model2 is null)
+        {
+            Assert.Fail("不相等");
+            return;
+        }
+        Type actualType = model1.GetType();
+        foreach (PropertyInfo propertyInfo in actualType.GetProperties())
+        {
+            Assert.AreEqual(propertyInfo.GetValue(model2), propertyInfo.GetValue(model1));
         }
     }
 

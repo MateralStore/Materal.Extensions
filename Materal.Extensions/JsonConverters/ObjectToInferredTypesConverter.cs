@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Materal.Extensions.JsonConverters;
@@ -42,7 +43,7 @@ internal class ObjectToInferredTypesConverter : JsonConverter<object>
                 return;
             }
             // 对于数组类型，直接序列化
-            else if (type.IsArray || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            else if (type.IsArray || type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>) || type.GetGenericTypeDefinition() == typeof(ObservableCollection<>)))
             {
                 JsonSerializer.Serialize(writer, value, type, options);
                 return;
