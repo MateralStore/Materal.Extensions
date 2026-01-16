@@ -1,18 +1,17 @@
-﻿namespace Materal.Extensions.DependencyInjection
+﻿namespace Materal.Extensions.DependencyInjection;
+
+/// <summary>
+/// HostBuilder扩展
+/// </summary>
+public static partial class HostBuilderExtension
 {
     /// <summary>
-    /// HostBuilder扩展
+    /// 使用Materal容器
     /// </summary>
-    public static partial class HostBuilderExtension
+    /// <param name="builder"></param>
+    public static IHostApplicationBuilder AddMateralServiceProvider(this IHostApplicationBuilder builder)
     {
-        /// <summary>
-        /// 使用Materal容器
-        /// </summary>
-        /// <param name="builder"></param>
-        public static IHostApplicationBuilder AddMateralServiceProvider(this IHostApplicationBuilder builder)
-        {
-            builder.ConfigureContainer(new MateralServiceContextProviderFactory());
-            return builder;
-        }
+        builder.ConfigureContainer(new MateralServiceContextProviderFactory());
+        return builder;
     }
 }
