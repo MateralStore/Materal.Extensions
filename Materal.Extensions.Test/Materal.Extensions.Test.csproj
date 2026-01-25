@@ -14,9 +14,7 @@
 		<PackageReference Include="MSTest.TestFramework" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Materal.Test.Base\Materal.Test.Base\Materal.Test.Base.csproj" />
 	  <ProjectReference Include="..\Materal.Extensions.DependencyInjection.AspNetCore\Materal.Extensions.DependencyInjection.AspNetCore.csproj" />
 	  <ProjectReference Include="..\Materal.Extensions.DependencyInjection\Materal.Extensions.DependencyInjection.csproj" />
-	  <ProjectReference Include="..\Materal.Extensions\Materal.Extensions.csproj" />
 	</ItemGroup>
 </Project>
