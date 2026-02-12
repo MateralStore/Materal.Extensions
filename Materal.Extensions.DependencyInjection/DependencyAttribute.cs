@@ -1,4 +1,4 @@
-﻿namespace Materal.Extensions.DependencyInjection;
+namespace Materal.Extensions.DependencyInjection;
 
 /// <summary>
 /// 声明依赖注入的行为以便自动注入到容器中，此操作会覆盖已有的依赖声明（如 <see cref="T:Dy.Core.Abstractions.Modularity.ISingletonDependency" />）

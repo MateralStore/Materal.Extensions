@@ -1,4 +1,4 @@
-﻿namespace Materal.Extensions.DependencyInjection;
+namespace Materal.Extensions.DependencyInjection;
 
 /// <summary>
 /// Materal容器上下文提供者工厂

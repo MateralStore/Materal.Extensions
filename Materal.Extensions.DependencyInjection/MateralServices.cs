@@ -1,4 +1,4 @@
-﻿using Materal.Abstractions;
+using Materal.Abstractions;
 using Materal.Utils.Extensions;
 
 namespace Materal.Extensions.DependencyInjection;

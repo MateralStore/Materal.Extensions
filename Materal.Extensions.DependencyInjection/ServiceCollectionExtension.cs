@@ -1,4 +1,4 @@
-﻿using AspectCore.Extensions.DependencyInjection;
+using AspectCore.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Text;
 

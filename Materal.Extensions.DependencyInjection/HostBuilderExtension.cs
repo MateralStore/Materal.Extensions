@@ -1,4 +1,4 @@
-﻿namespace Materal.Extensions.DependencyInjection;
+namespace Materal.Extensions.DependencyInjection;
 
 /// <summary>
 /// HostBuilder扩展

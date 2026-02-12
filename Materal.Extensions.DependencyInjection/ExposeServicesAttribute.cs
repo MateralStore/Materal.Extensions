@@ -1,4 +1,4 @@
-﻿namespace Materal.Extensions.DependencyInjection;
+namespace Materal.Extensions.DependencyInjection;
 
 /// <summary>
 /// 将此实例暴露为指定的类型
